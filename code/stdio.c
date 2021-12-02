@@ -1,38 +1,107 @@
+// $ gcc -o # @ 
 #include"sbi.h"
+#include<stdio.h>
+#include<stdarg.h>
 
 void cputchar(char c){
-	sbi_putchar(c);
+	//sbi_putchar(c);
+	putchar(c);
 }
 
-int cput(const char *str){
-	int len = 0;
-	const char* c = str;
-	while ( *(c) != '\0') {
+void prints(const char *c){
+	while (*c) {
 		cputchar(*c);
 		c++;
-		len++;
 	}
-	return len;
 }
 
-void cprintf(const char *str, unsigned int x){
-	const char *c = str;
-	while (*c != '\0'){
-		if (*c == '%' && *(c+1) == 'd'){
-			char num[10];
-			int i = 0;
-			while (x != 0){
-				int re = x % 10;
-				x = x / 10;
-				num[i] = re;
-				i++;
-			}
-			for (int j = i-1; j >= 0; j--)
-				cputchar('0' + num[j]);
-			c += 2;
+void printd(int x){
+	char num[16];
+	int i = 0;
+	if (x == 0) {
+		cputchar('0');
+		return;
+	}
+	while (x != 0){
+		int re = x % 10;
+		x = x / 10;
+		num[i++] = re;
+	}
+	for (int j = i-1; j >= 0; j--)
+		cputchar('0' + num[j]);
+}
+
+void printc(char c){
+	cputchar(c);
+}
+
+void printx(int d){
+	char x[24];
+	int i = 0;
+	if (d == 0) {
+		cputchar('0');
+		return;
+	}
+	while (d != 0){
+		int re = d % 16;
+		d = d / 16;
+		x[i++] = re;
+	}
+	for (int j = i - 1; j >= 0; j--)
+		cputchar('0' + x[j]);
+}
+
+void cprintf(const char *fmt, ...){
+	va_list ap;
+	va_start(ap, fmt);
+
+	char* s;
+	int d;
+	char c;
+
+	while (*fmt){
+		if (*fmt != '%'){
+			cputchar(*fmt);
+			fmt++;
+			continue;
 		}
-		if (*c == '\0') return;
-		cputchar(*c);
-		c++;
+
+		fmt++;
+
+		if (!(*fmt)){
+			break;
+		}
+
+		switch (*fmt){
+			case 's':
+				s = va_arg(ap, char*);
+				prints(s);
+				break;
+			case 'd':
+				d = va_arg(ap, int);
+				printd(d);
+				break;
+			case 'c':
+				c = (char)va_arg(ap, int);
+				printc(c);
+				break;
+			case 'x':
+				d = va_arg(ap, int);
+				printx(d);
+				break;
+			default:
+				break;
+		}
+		fmt++;
 	}
 }
+
+///* test
+int main(){
+	char *s = "hello";
+	char c = 'l';
+	int d = 0;
+	cprintf("s: %s, c: %c, d: %d, x: %x\n", s, c, d, d);
+	return 0;
+}
+//*/
