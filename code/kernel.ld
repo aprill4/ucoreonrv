@@ -10,12 +10,21 @@ SECTIONS
 		*(.text)
 	}
 
+	PROVIDE(etext = .);
+
 	.data : {
 		*(.data)
 	}
 	
-	.sdata : {
-		*(.sdata)
-		*(.sdata.*)
+	PROVIDE(edata = .);
+
+	.bss : {
+		*(.bss)
+		*(.bss.*)
+		*(.sbss*)
 	}
+	
+	. = ALIGN(0x1000);
+
+	PROVIDE(kernel_end = .);
 }

@@ -19,7 +19,7 @@ void clock_init(){
 	set_csr(CSR_SIE, tmp);
 	clock_set_next_event();
 	ticks = 0; 
-	cput("++ setup timer interrupts\n");	
+	cprintf("++ setup timer interrupts\n");	
 }
 
 void clock_set_next_event(){

@@ -3,7 +3,9 @@
 
 void cputchar(char c);
 
-int cput(const char *str);
-void cprintf(const char *str, unsigned int x);
-
+void prints(const char *str);
+void printd(int x);
+void printx(int d);
+void printc(char c);
+void cprintf(const char *fmt, ...);
 #endif

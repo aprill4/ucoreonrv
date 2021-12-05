@@ -3,10 +3,10 @@ GCCPREFIX := riscv64-unknown-elf-
 OBJCOPY :=$(GCCPREFIX)objcopy 
 CC := $(GCCPREFIX)gcc
 LD := $(GCCPREFIX)ld
-CFLAGS := -Wall -Werror -Wno-unused --std=gnu99 -mcmodel=medany -g -Os
+CFLAGS := -Wall -Werror -Wno-unused --std=gnu99 -mcmodel=medany -g -Os -nostdinc -fno-builtin
 LDFLAGS := -m elf64lriscv -nostdlib -T kernel.ld --gc-sections
 
-obj = entry.o init.o sbi.o stdio.o trap_entry.o clock.o trap.o
+obj = entry.o init.o sbi.o stdio.o trap_entry.o clock.o trap.o pmm.o
 
 silly_little_ucore.img: init
 	$(OBJCOPY) init --strip-all -O binary silly_little_ucore.img
@@ -31,6 +31,9 @@ clock.o: clock.h clock.c sbi.h defs.h riscv.h stdio.h
 
 trap.o: trap.c clock.h trap.h 
 	$(CC) $(CFLAGS) -c trap.c
+
+pmm.o: pmm.c pmm.h defs.h mem.h
+	$(CC) $(CFLAGS) -c pmm.c
 
 init.o: stdio.h defs.h init.c
 	$(CC) $(CFLAGS) -c init.c

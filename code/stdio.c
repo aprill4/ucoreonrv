@@ -1,11 +1,11 @@
 // $ gcc -o # @ 
 #include"sbi.h"
-#include<stdio.h>
-#include<stdarg.h>
+//#include<stdio.h>
+//#include<stdarg.h>
 
 void cputchar(char c){
-	//sbi_putchar(c);
-	putchar(c);
+	sbi_putchar(c);
+	//putchar(c);
 }
 
 void prints(const char *c){
@@ -15,7 +15,7 @@ void prints(const char *c){
 	}
 }
 
-void printd(int x){
+void printd(unsigned int x){
 	char num[16];
 	int i = 0;
 	if (x == 0) {
@@ -35,7 +35,7 @@ void printc(char c){
 	cputchar(c);
 }
 
-void printx(int d){
+void printx(unsigned int d){
 	char x[24];
 	int i = 0;
 	if (d == 0) {
@@ -48,15 +48,23 @@ void printx(int d){
 		x[i++] = re;
 	}
 	for (int j = i - 1; j >= 0; j--)
-		cputchar('0' + x[j]);
+		switch(x[j]){
+			case 15: cputchar('F'); break;
+			case 14: cputchar('E'); break;
+			case 13: cputchar('D'); break;
+			case 12: cputchar('C'); break;
+			case 11: cputchar('B'); break;
+			case 10: cputchar('A'); break;
+			default: cputchar('0' + x[j]); break;
+		}
 }
 
 void cprintf(const char *fmt, ...){
-	va_list ap;
-	va_start(ap, fmt);
+	__builtin_va_list ap;
+	__builtin_va_start(ap, fmt);
 
 	char* s;
-	int d;
+	unsigned int d;
 	char c;
 
 	while (*fmt){
@@ -74,19 +82,19 @@ void cprintf(const char *fmt, ...){
 
 		switch (*fmt){
 			case 's':
-				s = va_arg(ap, char*);
+				s = __builtin_va_arg(ap, char*);
 				prints(s);
 				break;
 			case 'd':
-				d = va_arg(ap, int);
+				d = __builtin_va_arg(ap, unsigned int);
 				printd(d);
 				break;
 			case 'c':
-				c = (char)va_arg(ap, int);
+				c = (char)__builtin_va_arg(ap, int);
 				printc(c);
 				break;
 			case 'x':
-				d = va_arg(ap, int);
+				d = __builtin_va_arg(ap, unsigned int);
 				printx(d);
 				break;
 			default:
@@ -94,14 +102,15 @@ void cprintf(const char *fmt, ...){
 		}
 		fmt++;
 	}
+	__builtin_va_end(ap);
 }
 
-///* test
+/* test
 int main(){
 	char *s = "hello";
 	char c = 'l';
-	int d = 0;
+	int d = 31;
 	cprintf("s: %s, c: %c, d: %d, x: %x\n", s, c, d, d);
 	return 0;
 }
-//*/
+*/

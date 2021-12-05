@@ -44,7 +44,7 @@ void exception_handler(struct trapframe* tf){
 	uint64 cause = tf->cause;
 	switch(cause){
 		case 2:{
-				cput("illegal inst!\n");
+				cprintf("illegal inst!\n");
 				tf->epc += 4;
 			}
 		break;
